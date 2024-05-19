@@ -1,5 +1,7 @@
 #pragma once
 
+#define __DEBUG 1
+
 #include "types.h"
 #include <vector>
 #include <string>
@@ -81,45 +83,6 @@ class machine_c
 
     uint32_t lex(std::string_view, std::vector<command_t>&);
     uint32_t lex() { return lex(program, commands); }
+
+    uint32_t run(int ticks = -1);
 };
-
-uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destination)
-/*
-    takes a string view and trawls it codepoint by codepoint
-    pushes back results into destination vector
-
-    results are of the type command_t := struct { instruction, value }
-*/
-{
-    uint32_t amount_written = 0;
-
-    std::string_view::iterator beg_itr = cjk.begin();
-    std::string_view::iterator end_itr = cjk.end();
-
-    if(beg_itr == end_itr) { return -1; }
-    if(!utf8::is_valid(cjk)) { return -1; }
-
-    std::string_view::iterator index = beg_itr;
-
-    while(index != end_itr)
-    {
-        switch(utf8::next(index, end_itr))
-        {
-            case 0x0 ... 0x2e79: // everything up to CJK is a comment for now
-                destination.push_back({COMM, {0, 0}});
-                break;
-            case 0x6b7b: // 死 - die = sei2
-                destination.push_back({DIE, {0, 0}});
-                break;
-            case 0x5638: // 嘸 - nothing = m4
-                destination.push_back({NOTHN,{0,0}});
-                break;
-            default:
-                destination.push_back({ZERO, {0, 0}});
-                break;
-        }
-        amount_written++;
-    }
-
-    return amount_written; // placeholder
-}

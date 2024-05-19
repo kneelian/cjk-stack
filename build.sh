@@ -1,0 +1,1 @@
+g++ main.cpp machine.cpp -o a.out -O2 -std=gnu++20

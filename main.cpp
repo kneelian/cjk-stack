@@ -8,7 +8,6 @@
 
 #include "types.h"
 #include "machine.h"
-#include "lexing.h"
 
 int main()
 {
