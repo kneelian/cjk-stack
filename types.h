@@ -12,22 +12,22 @@ struct vm_t
 	uint32_t value : 24;
 }; // the lowest byte holds the type
 
-enum class type_t: uint8_t
+enum type_t: uint8_t
 {
-	EMPTY = 0x00,
-	INT24 = 0x01,
-   UINT24 = 0x02,
+	EMPTY_T = 0x00,
+	INT24_T = 0x01,
+   UINT24_T = 0x02,
 
-   INT48L = 0x03,
-   INT48H = 0x04,
+   INT48L_T = 0x03,
+   INT48H_T = 0x04,
 
-    F24   = 0x05,
+    F24_T   = 0x05,
 
-    ADDR  = 0x06,
+    ADDR_T  = 0x06,
 
-    CUSTOM= 0x80,
+    CUSTOM_T= 0x80,
 
-	ERROR = 0xff
+	ERROR_T = 0xff
 };
 
 enum insn_t: uint16_t
@@ -35,9 +35,11 @@ enum insn_t: uint16_t
     ZERO = 0x0000,
     COMM = 0x0001,
 
-    NOTHN= 0x5638,
+    NOTHN    = 0x5638, // 嘸
 
-    DIE  = 0x6b7b,
+    DIE      = 0x6b7b, // 死
+
+    PSH_ZERO = 0x96f6, // 零
 
     PHOLD= 0xfffd,
     ERROR= 0xFFFF

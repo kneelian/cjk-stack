@@ -1,6 +1,8 @@
 #pragma once
 
-#define __DEBUG 1
+#ifndef __DEBUG
+#define __DEBUG 0
+#endif
 
 #include "types.h"
 #include <vector>

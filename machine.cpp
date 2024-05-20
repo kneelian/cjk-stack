@@ -29,12 +29,15 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x20 ... 0x2e79: // everything up to CJK is a comment for now
                 destination.push_back({COMM, {0, 0}});
                 break;
-            case 0x6b7b: // 死 - die = sei2
-                destination.push_back({DIE, {0, 0}});
-                break;
             case 0x5638: // 嘸 - nothing = m4
                 destination.push_back({NOTHN,{0,0}});
                 break;
+            case 0x6b7b: // 死 - die = sei2
+                destination.push_back({DIE, {0, 0}});
+                break;
+            case 0x96f6: // 零 - zero = leng4
+            	destination.push_back({PSH_ZERO,{0, 0}});
+            	break;
             default:
                 destination.push_back({ZERO, {0, 0}});
                 break;
@@ -66,7 +69,42 @@ uint32_t machine_c::run(int ticks)
 					   (val & 0x80_00_00)
 */
 {
+	if(commands.empty()) { return -1; } // naughty naughty!
+
 	int32_t elapsed = 0;
+	size_t  command_ptr = 0;
+	size_t  commands_sz = commands.size();
+
+	while((elapsed < ticks) and (elapsed < 0x80'00'00))
+	{
+		elapsed++;
+		switch(commands[command_ptr].instruction)
+		{
+			case ZERO:
+				if(__DEBUG) { std::printf("debug: ZERO\n"); }
+				break;
+			case COMM:
+				if(__DEBUG) { std::printf("debug: COMM\n"); }
+				break;
+			case PSH_ZERO:
+				if(__DEBUG) { std::printf("debug: PSH_ZERO 零 @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x00});
+				break;
+			case DIE:
+				if(__DEBUG) { std::printf("debug: DIE 死 @ %d\n", int(command_ptr)); }
+				std::printf("encountered 死 / sei3, terminating after %d at index #%ld\n", elapsed, command_ptr);
+				goto exit_loop;
+				break;
+			case NOTHN:
+				if(__DEBUG) { std::printf("debug: NOTHING 嘸 @ %d\n", int(command_ptr)); }
+				break;
+			default:
+				break;
+		}
+		command_ptr = (command_ptr+1) % commands_sz;
+	}
+
+	exit_loop:
 
 	return elapsed;
 }
