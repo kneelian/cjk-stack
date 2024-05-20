@@ -43,6 +43,8 @@ enum insn_t: uint16_t
 
     INCREMENT= 0x589e, // 增
 
+    WHERE    = 0x5b89, // 安
+
     ROTATE   = 0x64f0, // 擰
 
     ABANDON  = 0x68c4, // 棄

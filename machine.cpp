@@ -39,6 +39,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x589e: // 增 - add/expand = zang1
             	destination.push_back({INCREMENT,{0,0}});
             	break;
+            case 0x5b89: // 安 - where[literary] = on1
+            	destination.push_back({WHERE,  {0,0}});
+            	break;
             case 0x64f0: // 擰 - turn around/spin/rotate = ning6
             	destination.push_back({ROTATE, {0,0}});
             	break;
@@ -90,7 +93,6 @@ uint32_t machine_c::run(int ticks)
 	int32_t elapsed = 0;
 	size_t  command_ptr = 0;
 	size_t  commands_sz = commands.size();
-
 
 	 uint8_t temp_type= 0;
 
@@ -282,6 +284,21 @@ uint32_t machine_c::run(int ticks)
 				}
 				push_main(temp_vmt);
 				temp_vmt = {0, 0};
+				break;
+			}
+
+			/*
+				branching and addressing
+			*/
+			case WHERE:
+			/*
+				() -> (addr)
+				push current command pointer
+				onto side stack
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 安 WHERE     @ %d\n", int(command_ptr));}
+				push_side({ADDR_T, command_ptr});
 				break;
 			}
 

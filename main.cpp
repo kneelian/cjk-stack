@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 
 	machine_c machine;
 
-	std::string example_string = argc>1?argv[1]:"零增零增增加零增零增增加加";
+	std::string example_string = argc>1?argv[1]:"零增零增增加零增擰安擰零增增加加";
 
 	machine.load(example_string);
 	uint32_t lexed_count = machine.lex();

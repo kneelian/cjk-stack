@@ -60,7 +60,7 @@ class machine_c
 			- pop:  returns top of stack, then removes it
     */
 
-    void push_main (vm_t n)
+    void push_main(vm_t n)
     { main -> push_back(n); }
     vm_t peek_main()
     { if(!main->empty()) return main -> back(); else return {0xff, 0xffff}; }
