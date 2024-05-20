@@ -8,6 +8,9 @@
 #include <vector>
 #include <string>
 #include <string_view>
+
+#include <bit>
+
 #include "utf8.h"
 
 class machine_c
@@ -60,11 +63,12 @@ class machine_c
     void push_main (vm_t n)
     { main -> push_back(n); }
     vm_t peek_main()
-    { return main -> back(); }
+    { if(!main->empty()) return main -> back(); else return {0xff, 0xffff}; }
     void remv_main()
-    { main -> pop_back(); }
+    { if(!main->empty()) main -> pop_back(); }
     vm_t  pop_main()
     {
+        if(main->empty()) { return {0xff, 0xffff}; }
     	vm_t temp = peek_main();
     	remv_main();
     	return temp;
@@ -73,11 +77,12 @@ class machine_c
     void push_side(vm_t n)
     { side-> push_back(n); }
     vm_t peek_side()
-    { return side -> back(); }
+    { if(!side->empty()) return side -> back(); else return {0xff, 0xffff}; }
     void remv_side()
-    { side -> pop_back(); }
+    { if(!side->empty()) side -> pop_back(); }
     vm_t  pop_side()
     {
+        if(side->empty()) { return {0xff, 0xffff}; }
     	vm_t temp = peek_side();
     	remv_side();
     	return temp;
@@ -86,5 +91,5 @@ class machine_c
     uint32_t lex(std::string_view, std::vector<command_t>&);
     uint32_t lex() { return lex(program, commands); }
 
-    uint32_t run(int ticks = -1);
+    uint32_t run(int ticks = 0x7f'ff'ff);
 };

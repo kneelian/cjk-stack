@@ -27,6 +27,8 @@ enum type_t: uint8_t
 
     CUSTOM_T= 0x80,
 
+    COMM_T  = 0xfe,
+
 	ERROR_T = 0xff
 };
 
@@ -35,9 +37,19 @@ enum insn_t: uint16_t
     ZERO = 0x0000,
     COMM = 0x0001,
 
-    NOTHN    = 0x5638, // 嘸
+    ADD  = 0x52a0,     // 加
+
+    NOTHING  = 0x5638, // 嘸
+
+    INCREMENT= 0x589e, // 增
+
+    ROTATE   = 0x64f0, // 擰
+
+    ABANDON  = 0x68c4, // 棄
 
     DIE      = 0x6b7b, // 死
+
+    DESTROY  = 0x6bb2, // 殲
 
     PSH_ZERO = 0x96f6, // 零
 
