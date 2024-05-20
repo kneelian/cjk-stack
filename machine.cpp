@@ -39,6 +39,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x589e: // 增 - add/expand = zang1
             	destination.push_back({INCREMENT,{0,0}});
             	break;
+            case 0x5b56: // 孖 - twin = maa1
+            	destination.push_back({TWIN, {0,0}});
+            	break;
             case 0x5b89: // 安 - where[literary] = on1
             	destination.push_back({WHERE,  {0,0}});
             	break;
@@ -160,7 +163,13 @@ uint32_t machine_c::run(int ticks)
 				push_main({INT24_T, 0x00});
 				break;
 
-			/*
+			case TWIN: // 孖 (x) -> (x)(x) double the top of stack
+				if(__DEBUG) { std::printf("debug: 孖 TWIN      @ %d\n", int(command_ptr));}
+				temp_vmt = peek_main();
+				push_main(temp_vmt);
+				break;
+
+			/* ---------------------------
 				arithmetic
 			*/
 			case INCREMENT:
