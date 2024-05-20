@@ -35,8 +35,11 @@ int main(int argc, char** argv)
 
 	machine_c machine;
 
-	std::string example_string = argc>1?argv[1]:"零增孖加孖加";
-
+	std::string example_string = argc>1?argv[1]:
+	"零零增 loop 安換孖紡換孖紡加 end 跳 die 死"
+	//"零增孖增孖紡換孖紡死";
+	// 換孖紡換孖紡加
+	;
 	machine.load(example_string);
 	uint32_t lexed_count = machine.lex();
 	//std::vector<command_t> recipient;
@@ -48,7 +51,7 @@ int main(int argc, char** argv)
 	}*/
 	if(__DEBUG) { std::printf("-----------\n"); }
 
-	int runtime = machine.run(32);
+	int runtime = machine.run(768);
 
 	std::printf("-----------\n");
 

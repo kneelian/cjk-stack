@@ -47,6 +47,8 @@ enum insn_t: uint16_t
 
     WHERE    = 0x5b89, // 安
 
+    SWAP     = 0x63db, // 換
+
     ROTATE   = 0x64f0, // 擰
 
     ABANDON  = 0x68c4, // 棄
@@ -54,6 +56,10 @@ enum insn_t: uint16_t
     DIE      = 0x6b7b, // 死
 
     DESTROY  = 0x6bb2, // 殲
+
+    SWAP3    = 0x7d21, // 紡
+
+    JUMP     = 0x8df3, // 跳
 
     PSH_ZERO = 0x96f6, // 零
 

@@ -45,6 +45,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x5b89: // 安 - where[literary] = on1
             	destination.push_back({WHERE,  {0,0}});
             	break;
+            case 0x63db: // 換 - swap = wun6
+            	destination.push_back({SWAP, {0,0}});
+            	break;
             case 0x64f0: // 擰 - turn around/spin/rotate = ning6
             	destination.push_back({ROTATE, {0,0}});
             	break;
@@ -56,6 +59,12 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
                 break;
             case 0x6bb2: // 殲 - destroy = cim1
             	destination.push_back({DESTROY,{0,0}});  
+            	break;
+            case 0x7d21: // 紡 - spin/swap3 = fong2
+            	destination.push_back({SWAP3, {0,0}});
+            	break;
+            case 0x8df3: // 跳 - jump = tiu3
+            	destination.push_back({JUMP, {0,0}});
             	break;
             case 0x96f6: // 零 - zero = leng4
             	destination.push_back({PSH_ZERO,{0, 0}});
@@ -168,6 +177,24 @@ uint32_t machine_c::run(int ticks)
 				temp_vmt = peek_main();
 				push_main(temp_vmt);
 				break;
+
+			case SWAP: // 換 - swap = wun6 (a)(b) -> (b)(a)
+            	if(__DEBUG) { std::printf("debug: 換 SWAP      @ %d\n", int(command_ptr));} 
+            	temp_vmt = pop_main();
+            	push_side(pop_main());
+            	push_main(temp_vmt);
+            	push_main(pop_side());
+            	break;
+
+            case SWAP3: // 紡 (a)(b)(c) -> (c)(a)(b)
+            	if(__DEBUG) { std::printf("debug: 紡 SWAP3     @ %d\n", int(command_ptr));}
+            	temp_vmt = pop_main();
+            	push_side(pop_main());
+            	push_side(pop_main());
+            	push_main(temp_vmt);
+            	push_main(pop_side());
+            	push_main(pop_side());
+            	break;
 
 			/* ---------------------------
 				arithmetic
@@ -307,7 +334,26 @@ uint32_t machine_c::run(int ticks)
 			*/
 			{
 				if(__DEBUG) { std::printf("debug: 安 WHERE     @ %d\n", int(command_ptr));}
-				push_side({ADDR_T, command_ptr});
+				push_side({ADDR_T, command_ptr-1});
+				break;
+			}
+
+			case JUMP:
+			/*
+				(addr) -> ()
+				pops address off side stack
+				jumps to address
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 跳 JUMP      @ %d\n", int(command_ptr));}
+				temp_vmt = pop_side();
+				if(temp_vmt.type != ADDR_T)
+				{
+					std::printf("type error: cannot jump to non-ADDR_T (%#x) @ %d\n", temp_vmt.type, int(command_ptr));
+					push_side(temp_vmt);
+				}
+				command_ptr = temp_vmt.value;
+				temp_vmt = {0,0};
 				break;
 			}
 
@@ -316,7 +362,7 @@ uint32_t machine_c::run(int ticks)
 			*/
 
 			case DIE: // 死 is halt and catch fire
-				if(__DEBUG) { std::printf("debug: 死 DIE   @ %d\n", int(command_ptr)); }
+				if(__DEBUG) { std::printf("debug: 死 DIE       @ %d\n", int(command_ptr)); }
 				std::printf("encountered 死 / sei3, terminating after %d at index #%ld\n", elapsed, command_ptr);
 				goto exit_loop;
 				break;
