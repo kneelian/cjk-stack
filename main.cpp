@@ -11,6 +11,9 @@
 
 int main()
 {
+
+	std::printf("mode: %s\n", __DEBUG?"debug":"release");
+
 	/*
 	std::string a = "\xe6\x97\xa5\xd1\x88";
 
@@ -29,16 +32,35 @@ int main()
 
 	machine_c machine;
 
-	std::string example_string = "嘸死 a嘸c 死";
+	std::string example_string = "嘸嘸零嘸嘸零嘸死 a嘸c 死";
 
 	machine.load(example_string);
-
+	uint32_t lexed_count = machine.lex();
 	//std::vector<command_t> recipient;
-
-	std::printf("number of lexed items: %d\n", machine.lex());
+	/*
+	std::printf("number of lexed items: %d\n", lexed_count); // machine.lex());
 	for(auto i : machine.commands)
 	{
 		std::printf("%#x\n", i.instruction);
+	}*/
+	std::printf("-----------\n");
+
+	machine.run(8);
+
+	if(__DEBUG)
+	{
+		std::printf("program: %.*s\n-----\n", int(machine.program.length()), machine.program.data());
+		std::printf("stack dump:\n - stack A: ");
+		for(auto i : machine.A)
+		{
+			std::printf("[%#x,%#x] ", i.type, i.value);
+		}
+		std::printf("\n - stack B: ");
+		for(auto i : machine.B)
+		{
+			std::printf("[%#x,%#x] ", i.type, i.value);
+		}
+		std::printf("\n-----\n");
 	}
 
 	return 0;
