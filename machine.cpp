@@ -30,6 +30,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x20 ... 0x2e79: // everything up to CJK is a comment for now
                 if(__DEBUG) { destination.push_back({COMM, {COMM_T, codepoint}}); }
                 break;
+            case 0x4f4e: // 低 - down/decrement = dai1
+            	destination.push_back({DECREMENT, {0,0}});
+            	break;
             case 0x52a0: // 加 - add = gaa1
             	destination.push_back({ADD, {0,0}});
             	break;
@@ -62,6 +65,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             	break;
             case 0x7d21: // 紡 - spin/swap3 = fong2
             	destination.push_back({SWAP3, {0,0}});
+            	break;
+            case 0x843d: // 落 - fall = lok6
+            	destination.push_back({FALL, {0,0}});
             	break;
             case 0x8df3: // 跳 - jump = tiu3
             	destination.push_back({JUMP, {0,0}});
@@ -251,6 +257,59 @@ uint32_t machine_c::run(int ticks)
 				temp_vmt = {0, 0};
 				break;
 			}
+
+			case DECREMENT:
+			/*
+				低 (i24) -> (i24); 
+				   (u24) -> (u24); 
+				   (f24) -> (f24); 
+	        (i48h)(i48l) -> (i48h)(i48l) 
+	                    sub 1
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 低 DECREMENT @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT DECREMENT AN ERROR!\n");
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_vmt.value -= 1;
+						break;
+
+					case F24_T:
+						temp_f32 
+							= std::bit_cast<float>(temp_vmt.value << 8);
+						temp_f32 -= 1.0;
+						temp_vmt.value 
+							= std::bit_cast<uint32_t>(temp_f32) >> 8;
+					
+					case INT48L_T:
+						temp_i64 = temp_vmt.value;
+						temp_vmt = pop_main();
+						if(temp_vmt.type != INT48H_T)
+						{
+							std::printf("MALFORMED I48!\n");
+							temp_vmt = {INT48L_T, uint32_t(temp_i64)};
+							break;
+						}
+						temp_i64 += uint64_t(temp_vmt.value) << 24;
+						temp_i64 -= 1;
+						push_main({INT48H_T, uint32_t(temp_i64 >> 24)});
+						temp_vmt = {INT48L_T, uint32_t(temp_i64 & 0x7f'ff'ff)};
+						break;
+
+					default:
+						break;
+				}
+				push_main(temp_vmt);
+				temp_vmt = {0, 0};
+				break;
+			}
 			case ADD:
 			/*
 				加 (i24)(i24) -> (i24); 
@@ -354,6 +413,36 @@ uint32_t machine_c::run(int ticks)
 				}
 				command_ptr = temp_vmt.value;
 				temp_vmt = {0,0};
+				break;
+			}
+
+			case FALL:
+			/*
+				(cond)(addr) -> ()
+				pops address off side stack
+				peeks at condition
+				if nonzero, jumps to address
+				if zero: pops address and condition
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 落 FALL      @ %d\n", int(command_ptr));}
+				temp_vmt = pop_side();
+				if(peek_side().value == 0x0)
+				{
+					temp_vmt = {0,0};
+					remv_side();
+					break;
+				}
+
+				if(temp_vmt.type != ADDR_T)
+				{
+					std::printf("type error: cannot jump to non-ADDR_T (%#x) @ %d\n", temp_vmt.type, int(command_ptr));
+					push_side(temp_vmt);
+				}
+
+				command_ptr = temp_vmt.value;
+				temp_vmt = {0,0};
+
 				break;
 			}
 

@@ -37,7 +37,9 @@ enum insn_t: uint16_t
     ZERO = 0x0000,
     COMM = 0x0001,
 
-    ADD  = 0x52a0,     // 加
+    DECREMENT= 0x4f4e, // 低
+
+    ADD      = 0x52a0, // 加
 
     NOTHING  = 0x5638, // 嘸
 
@@ -58,6 +60,8 @@ enum insn_t: uint16_t
     DESTROY  = 0x6bb2, // 殲
 
     SWAP3    = 0x7d21, // 紡
+
+    FALL     = 0x843d, // 落
 
     JUMP     = 0x8df3, // 跳
 
