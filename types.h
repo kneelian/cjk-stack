@@ -86,18 +86,6 @@ enum insn_t: uint16_t
     PSH_NINE = 0x7396, // 玖
 
     PSH_TEN  = 0x62fe, // 拾
-    /*
-        壹 jat1  1
-        貳 ji6   2
-        參 saam1 3
-        肆 sei3  4
-        伍 ng5   5
-        陸 luk6  6
-        柒 cat1  7
-        捌 baat3 8
-        玖 gau2  9
-        拾 sap6  10
-    */
 
     PHOLD= 0xfffd,
     ERROR= 0xFFFF
