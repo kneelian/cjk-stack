@@ -75,6 +75,36 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x96f6: // 零 - zero = leng4
             	destination.push_back({PSH_ZERO,{0, 0}});
             	break;
+			case 0x58f9: // 壹 - one = jat1
+				destination.push_back({PSH_ONE ,{0,0}});
+				break;
+			case 0x8cb3: // 貳 - two = ji6
+				destination.push_back({PSH_TWO ,{0,0}});
+				break;
+			case 0x53c3: // 參 - three = saam1 
+				destination.push_back({PSH_THREE,{0,0}});
+				break;
+			case 0x8086: // 肆 - four = sei3
+				destination.push_back({PSH_FOUR,{0,0}});
+				break;
+			case 0x4f0d: // 伍 - five = ng5  
+				destination.push_back({PSH_FIVE,{0,0}});
+				break;
+			case 0x9678: // 陸 - six = luk6
+				destination.push_back({PSH_SIX ,{0,0}});
+				break;
+			case 0x67d2: // 柒 - seven = cat1
+				destination.push_back({PSH_SEVEN,{0,0}});
+				break;
+			case 0x634c: // 捌 - eight = baat3
+				destination.push_back({PSH_EIGHT,{0,0}});
+				break;
+			case 0x7396: // 玖 - nine = gau2
+				destination.push_back({PSH_NINE,{0,0}});
+				break;
+			case 0x62fe: // 拾 - ten = sap6
+				destination.push_back({PSH_TEN ,{0,0}});
+				break;
             default:
                 if(__DEBUG) { destination.push_back({ZERO, {0, 0}}); }
                 break;
@@ -176,6 +206,46 @@ uint32_t machine_c::run(int ticks)
 			case PSH_ZERO: // 零 () -> (i24) push
 				if(__DEBUG) { std::printf("debug: 零 PSH_ZERO  @ %d\n", int(command_ptr));}
 				push_main({INT24_T, 0x00});
+				break;
+			case PSH_ONE:
+				if(__DEBUG) { std::printf("debug: 壹 PSH_ONE   @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x01});
+				break;
+			case PSH_TWO:
+				if(__DEBUG) { std::printf("debug: 貳 PSH_TWO   @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x02});
+				break;
+			case PSH_THREE:
+				if(__DEBUG) { std::printf("debug: 參 PSH_THREE @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x03});
+				break;
+			case PSH_FOUR:
+				if(__DEBUG) { std::printf("debug: 肆 PSH_FOUR  @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x04});
+				break;
+			case PSH_FIVE:
+				if(__DEBUG) { std::printf("debug: 伍 PSH_FIVE  @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x05});
+				break;
+			case PSH_SIX:
+				if(__DEBUG) { std::printf("debug: 陸 PSH_SIX   @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x06});
+				break;
+			case PSH_SEVEN:
+				if(__DEBUG) { std::printf("debug: 柒 PSH_SEVEN @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x07});
+				break;
+			case PSH_EIGHT:
+				if(__DEBUG) { std::printf("debug: 捌 PSH_EIGHT @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x08});
+				break;
+			case PSH_NINE:
+				if(__DEBUG) { std::printf("debug: 玖 PSH_NINE  @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x09});
+				break;
+			case PSH_TEN:
+				if(__DEBUG) { std::printf("debug: 拾 PSH_TEN  @ %d\n", int(command_ptr));}
+				push_main({INT24_T, 0x0a});
 				break;
 
 			case TWIN: // 孖 (x) -> (x)(x) double the top of stack

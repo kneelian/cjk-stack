@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	machine_c machine;
 
 	std::string example_string = argc>1?argv[1]:
-	"擰零增增增增增擰 零零增安換孖紡換孖紡加 擰換低換擰 落死"
+	"擰伍擰 零壹fib(安換孖紡換孖紡加 擰換低換擰 落)end死"
 	//"零增孖增孖紡換孖紡死";
 	// 換孖紡換孖紡加
 	;
