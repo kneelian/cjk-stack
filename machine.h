@@ -1,8 +1,6 @@
 #pragma once
 
-#ifndef __DEBUG
-#define __DEBUG 0
-#endif
+#include "debug.h"
 
 #include "types.h"
 #include <vector>
@@ -22,6 +20,8 @@ class machine_c
 
     std::string_view program;
     std::vector<command_t> commands;
+
+    std::string response;
 
 	machine_c()
 	{

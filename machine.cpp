@@ -1,5 +1,8 @@
 #include "machine.h"
 #include "types.h"
+#include "to_hanzi.h"
+
+#include "debug.h"
 
 uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destination)
 /*
@@ -36,9 +39,15 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x52a0: // 加 - add = gaa1
             	destination.push_back({ADD, {0,0}});
             	break;
+            case 0x6e1b: // 減 - sub = gam2
+            	destination.push_back({SUB, {0,0}});
+            	break;
             case 0x5638: // 嘸 - nothing = m4
                 destination.push_back({NOTHING,{0,0}});
                 break;
+            case 0x5831: // 報 - report = bou3
+            	destination.push_back({REPORT,{0,0}});
+            	break;
             case 0x589e: // 增 - add/expand = zang1
             	destination.push_back({INCREMENT,{0,0}});
             	break;
@@ -105,13 +114,15 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x62fe: // 拾 - ten = sap6
 				destination.push_back({PSH_TEN ,{0,0}});
 				break;
+			case 0x53DB: // 叛 - betray = bun6 toggle debug mode
+				destination.push_back({BETRAY, {0,0}});
+				break;
             default:
                 if(__DEBUG) { destination.push_back({ZERO, {0, 0}}); }
                 break;
         }
         amount_written++;
     }
-
     return amount_written;
 }
 
@@ -452,6 +463,78 @@ uint32_t machine_c::run(int ticks)
 				break;
 			}
 
+			case SUB:
+			/*
+				減 (i24)(i24) -> (i24); 
+				   (u24)(u24) -> (u24); 
+				   (f24)(f24) -> (f24); 
+	        (i48h)(i48l)
+				 +   -----> (i48h)(i48l);
+	        (i48h)(i48l) 
+	                    sub top two
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 減 SUB       @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT SUB AN ERROR!\n");
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_type= temp_vmt.type;
+						temp_i32 = temp_vmt.value;
+						temp_vmt = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						} 
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot sub non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						temp_i32 -= temp_vmt.value;
+						temp_vmt = {temp_type, temp_i32};
+						break;
+
+					case F24_T:
+						temp_f32 
+							= std::bit_cast<float>(temp_vmt.value << 8);
+						temp_vmt = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot sub non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						else if(temp_vmt.type < 0x05)
+						{
+							temp_f32 -= float(temp_vmt.value);
+						} else
+						{ temp_f32 -= std::bit_cast<float>(temp_vmt.value << 8); }
+						temp_vmt.value 
+							= std::bit_cast<uint32_t>(temp_f32) >> 8;
+						temp_vmt.type = F24_T;
+						break;
+				}
+				push_main(temp_vmt);
+				temp_vmt = {0, 0};
+				break;
+			}
+
 			/*
 				branching and addressing
 			*/
@@ -517,8 +600,44 @@ uint32_t machine_c::run(int ticks)
 			}
 
 			/*
+				print instructions
+			*/
+
+			case REPORT: // 報 peek top of stack and print to console log as i24 in chinese numerals
+			{
+				if(__DEBUG) { std::printf("debug: 報 REPORT    @ %d\n", int(command_ptr)); }
+				temp_i32 = peek_main().value;
+
+				bool negative = false; 
+
+				if(temp_i32 & 0x00'80'00'00) 
+				{ 
+					negative = true;
+					temp_i32 |= 0xff'00'00'00;
+					temp_i32 = -temp_i32;
+				}
+
+				std::string temp_string;
+				to_hanzi(temp_string, temp_i32);
+
+				std::printf(
+					"[%s%s]\n",
+					(negative?"負":""), 
+					temp_string.data()
+				);
+
+				break;
+			}
+
+			/*
 				special instructions
 			*/
+
+			case BETRAY: // 叛 toggle debug mode
+				if(__DEBUG) { std::printf("debug: 叛 BETRAY    @ %d - toggling to release\n", int(command_ptr));}
+				__DEBUG = !__DEBUG;
+				break;
+
 
 			case DIE: // 死 is halt and catch fire
 				if(__DEBUG) { std::printf("debug: 死 DIE       @ %d\n", int(command_ptr)); }

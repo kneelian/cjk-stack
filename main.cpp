@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "debug.h"
+
 #include "utf8.h"
 
 #include "types.h"
@@ -14,44 +16,27 @@ const char* type_as_string(uint32_t in);
 
 int main(int argc, char** argv)
 {
+	#ifdef __DBG
+		__DEBUG = true;
+	#else
+		__DEBUG = false;
+	#endif
 
 	std::printf("mode: %s\n", __DEBUG?"debug":"release");
-
-	/*
-	std::string a = "\xe6\x97\xa5\xd1\x88";
-
-	auto iter = a.begin();
-	int  cp = utf8::next(iter, a.end());
-
-	std::string b;
-
-	std::printf("%d and %d <-- %s\n", cp, utf8::next(iter, a.end()), a.data());
-	std::printf("%d\n", utf8::prior(iter, a.begin()) ==	0x448); // see if sha
-	
-	utf8::append(0x448, b);
-	std::printf("%d <-- %s ?= %s\n", b == "\xd1\x88", b.data(), "\xd1\x88"); // prints both
-
-	vm_t test; test.type = 0x50; test.value = 0x111111; std::printf("%d\n", *(uint32_t*)(&test));*/
 
 	machine_c machine;
 
 	std::string example_string = argc>1?argv[1]:
-	"擰伍擰 零壹fib(安換孖紡換孖紡加 擰換低換擰 落)end死"
+	"擰伍玖加擰 零壹fib(安換孖紡換孖紡加報 擰換低換擰 落)end死" // 叛
 	//"零增孖增孖紡換孖紡死";
 	// 換孖紡換孖紡加
 	;
 	machine.load(example_string);
 	uint32_t lexed_count = machine.lex();
-	//std::vector<command_t> recipient;
-	/*
-	std::printf("number of lexed items: %d\n", lexed_count); // machine.lex());
-	for(auto i : machine.commands)
-	{
-		std::printf("%#x\n", i.instruction);
-	}*/
+
 	if(__DEBUG) { std::printf("-----------\n"); }
 
-	int runtime = machine.run(128);
+	int runtime = machine.run(512);
 
 	std::printf("-----------\n");
 

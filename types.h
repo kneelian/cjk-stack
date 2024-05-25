@@ -40,8 +40,11 @@ enum insn_t: uint16_t
     DECREMENT= 0x4f4e, // 低
 
     ADD      = 0x52a0, // 加
+    SUB      = 0x6e1b, // 減
 
     NOTHING  = 0x5638, // 嘸
+
+    REPORT   = 0x5831, // 报
 
     INCREMENT= 0x589e, // 增
 
@@ -86,6 +89,8 @@ enum insn_t: uint16_t
     PSH_NINE = 0x7396, // 玖
 
     PSH_TEN  = 0x62fe, // 拾
+
+    BETRAY   = 0x53DB, // 叛
 
     PHOLD= 0xfffd,
     ERROR= 0xFFFF

@@ -9,7 +9,7 @@ FILES='main.cpp machine.cpp'
 if [ $# -eq 1 ]
 	then 
 		if [ "$1" = "-d" ]
-			then g++ ${FILES} -o a.out -O2 -std=gnu++20 -D__DEBUG
+			then g++ ${FILES} -o a.out -O2 -std=gnu++20 -D__DBG
 		elif [ "$1" = "-h" ]
 			then echo -e "${YLW}help${WHT}: run this script with '-d' for debug mode, and '-r' or no argument for release mode"
 		elif [ "$1" = "-r" ]

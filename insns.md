@@ -39,3 +39,7 @@ for numbers 0x0 .. 0xa:
 - 安 - push current location to side
 - 跳 - pop side and jump unconditionally
 - 落 - pop side and jump if nonzero
+
+# printing
+
+- 報 - peek and print to terminal
