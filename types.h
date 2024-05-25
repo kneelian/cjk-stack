@@ -25,6 +25,8 @@ enum type_t: uint8_t
 
     ADDR_T  = 0x06,
 
+    TYPE_T  = 0x07,
+
     CUSTOM_T= 0x80,
 
     COMM_T  = 0xfe,
@@ -69,28 +71,20 @@ enum insn_t: uint16_t
     JUMP     = 0x8df3, // 跳
 
     PSH_ZERO = 0x96f6, // 零
-
     PSH_ONE  = 0x58f9, // 壹
-
     PSH_TWO  = 0x8cb3, // 貳
-
     PSH_THREE= 0x53c3, // 參
-
     PSH_FOUR = 0x8086, // 肆
-
     PSH_FIVE = 0x4f0d, // 伍
-
     PSH_SIX  = 0x9678, // 陸
-
     PSH_SEVEN= 0x67d2, // 柒
-
     PSH_EIGHT= 0x634c, // 捌
-
     PSH_NINE = 0x7396, // 玖
-
     PSH_TEN  = 0x62fe, // 拾
 
     BETRAY   = 0x53DB, // 叛
+
+    TYPE     = 0x985e, // 類
 
     PHOLD= 0xfffd,
     ERROR= 0xFFFF

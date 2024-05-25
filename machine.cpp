@@ -114,8 +114,11 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x62fe: // 拾 - ten = sap6
 				destination.push_back({PSH_TEN ,{0,0}});
 				break;
-			case 0x53DB: // 叛 - betray = bun6 toggle debug mode
+			case 0x53DB: // 叛 - betray = bun6
 				destination.push_back({BETRAY, {0,0}});
+				break;
+			case 0x985e: // 類 - type = leoi6
+				destination.push_back({TYPE, {0,0}});
 				break;
             default:
                 if(__DEBUG) { destination.push_back({ZERO, {0, 0}}); }
@@ -199,6 +202,16 @@ uint32_t machine_c::run(int ticks)
 					goto exit_loop;
 				}
 				break;
+
+			/*
+				typesystem-related ops
+			*/
+			case TYPE: // 類 (?) -> (?) (typeid)
+			{
+				temp_vmt = peek_main();
+				push_side({TYPE_T, temp_vmt.type});
+				break;
+			}
 
 			/*
 				modifying stack contents without ops

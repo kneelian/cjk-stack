@@ -3,6 +3,8 @@
 - 嘸 - m4 `NOP`
 - 死 - sei2 `DIE`
 
+- 叛 - toggle debug
+
 # stack manipulation
 
 - 擰 - swap main and side stacks
@@ -33,6 +35,7 @@ for numbers 0x0 .. 0xa:
 - 增 - increment
 - 低 - decrement
 - 加 - add
+- 減 - subtract
 
 # flow control
 

@@ -75,6 +75,8 @@ const char* type_as_string(uint32_t in)
         case F24_T:   return "f24"; break;
         case ADDR_T:  return "adr"; break;
 
+        case TYPE_T:  return "typ"; break;
+
         case CUSTOM_T:return "usr"; break;
 
         case COMM_T:  return "com"; break;
