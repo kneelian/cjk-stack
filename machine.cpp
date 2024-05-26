@@ -137,6 +137,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x53DB: // 叛 - betray = bun6
 				destination.push_back({BETRAY, {0,0}});
 				break;
+			case 0x6574: // 整 - round = zing2
+				destination.push_back({ROUND, {0,0}});
+				break;
 			case 0x985e: // 類 - type = leoi6
 				destination.push_back({TYPE, {0,0}});
 				break;
@@ -228,8 +231,38 @@ uint32_t machine_c::run(int ticks)
 			*/
 			case TYPE: // 類 (?) -> (?) (typeid)
 			{
+				if(__DEBUG) { std::printf("debug: 類 TYPE      @ %d\n", int(command_ptr));}
 				temp_vmt = peek_main();
 				push_side({TYPE_T, temp_vmt.type});
+				break;
+			}
+
+			case ROUND: // 整 (f24) -> (i24)
+			{
+				if(__DEBUG) { std::printf("debug: 整 ROUND     @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT ROUND AN ERROR!\n");
+						break;
+
+					case INT24_T:
+					case UINT24_T:
+					case ADDR_T:
+					case INT48L_T:
+						break;
+
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(temp_vmt.value << 8);
+						temp_vmt = {INT24_T, uint32_t(temp_f32)};
+						break;
+
+					default:
+						std::printf("type error: cannot round non-numeric typeid %#x", temp_vmt.type);
+						break;
+				}
+				push_main(temp_vmt);
 				break;
 			}
 

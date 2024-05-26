@@ -93,6 +93,8 @@ enum insn_t: uint16_t
 
     TYPE     = 0x985e, // 類
 
+    ROUND    = 0x6574, // 整
+
     PHOLD= 0xfffd,
     ERROR= 0xFFFF
 };

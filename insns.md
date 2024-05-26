@@ -44,6 +44,10 @@ for numbers 0x0 .. 0xa:
 - 根 - root
 - 冪 - pow
 
+# type conversion
+
+- 整 - round
+
 # flow control
 
 - 安 - push current location to side
