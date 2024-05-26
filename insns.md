@@ -46,7 +46,8 @@ for numbers 0x0 .. 0xa:
 
 # type conversion
 
-- 整 - round
+- 整 - round (from float)
+- 彎 - bend (to float)
 
 # flow control
 

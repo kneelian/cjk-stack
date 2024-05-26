@@ -140,6 +140,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x6574: // 整 - round = zing2
 				destination.push_back({ROUND, {0,0}});
 				break;
+			case 0x5f4e: // 彎 - bend = waan1
+				destination.push_back({BEND, {0,0}});
+				break;
 			case 0x985e: // 類 - type = leoi6
 				destination.push_back({TYPE, {0,0}});
 				break;
@@ -265,6 +268,36 @@ uint32_t machine_c::run(int ticks)
 				push_main(temp_vmt);
 				break;
 			}
+
+			case BEND: // 彎 (i24) -> (f24)
+			// TODO : i48
+			{
+				if(__DEBUG) { std::printf("debug: 彎 BEND     @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT BEMD AN ERROR!\n");
+						break;
+
+					case F24_T:
+						break;
+
+					case INT24_T:
+					case UINT24_T:
+					case ADDR_T:
+						temp_f32 = float(temp_vmt.value);
+						temp_vmt = {F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8};
+						break;
+
+					default:
+						std::printf("type error: cannot round non-numeric typeid %#x", temp_vmt.type);
+						break;
+				}
+				push_main(temp_vmt);
+				break;
+			}
+
 
 			/*
 				modifying stack contents without ops
@@ -1049,7 +1082,7 @@ uint32_t machine_c::run(int ticks)
 
 			case FALL:
 			/*
-				(cond)(addr) -> ()
+				(addr)(cond) -> ()
 				pops address off side stack
 				peeks at condition
 				if nonzero, jumps to address
