@@ -146,8 +146,14 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x985e: // 類 - type = leoi6
 				destination.push_back({TYPE, {0,0}});
 				break;
+			case 0x5ba3: // 宣 - register = syun1
+				destination.push_back({REGISTER, {0,0}});
+				break;
+			case 0x7d42: // 終 - conclude = zung1
+				destination.push_back({CONCLUDE, {0,0}});
+				break;
             default:
-                if(__DEBUG) { destination.push_back({ZERO, {0, 0}}); }
+            	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
         }
         amount_written++;
@@ -1108,6 +1114,13 @@ uint32_t machine_c::run(int ticks)
 
 				break;
 			}
+
+			case REGISTER: // TODO
+			{ break; }
+			case CONCLUDE: // TODO
+			{ break; }
+			case LABEL:    // TODO
+			{ break; }
 
 			/*
 				print instructions

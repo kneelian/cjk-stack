@@ -27,6 +27,8 @@ enum type_t: uint8_t
 
     TYPE_T  = 0x07,
 
+    LABL_T  = 0x08,
+
     CUSTOM_T= 0x80,
 
     COMM_T  = 0xfe,
@@ -96,7 +98,11 @@ enum insn_t: uint16_t
     ROUND    = 0x6574, // 整
     BEND     = 0x5f4e, // 彎
 
+    REGISTER = 0x5BA3, // 宣
+    CONCLUDE = 0x7d42, // 終
+
     PHOLD= 0xfffd,
+    LABEL= 0xfffe,
     ERROR= 0xFFFF
 };
 
