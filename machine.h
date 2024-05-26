@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include <bit>
+#include <unordered_map>
 
 #include "utf8.h"
 
@@ -17,6 +18,8 @@ class machine_c
 	std::vector<vm_t> *main = nullptr, 
 					  *side = nullptr;
     //std::vector<std::string*> registry;
+
+    std::unordered_map<int, int> registry;
 
     std::string_view program;
     std::vector<command_t> commands;
@@ -30,14 +33,10 @@ class machine_c
 		main = &A;
 		side = &B;
         commands.reserve(32);
-	//  registry.reserve(8);
 	}
 
    ~machine_c()
-    {
-    	/*for(auto i : registry)
-    		{ delete i; }*/
-    }
+    { }
 
     bool swap_ab()
     {

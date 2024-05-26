@@ -55,6 +55,10 @@ for numbers 0x0 .. 0xa:
 - 跳 - pop side and jump unconditionally
 - 落 - pop side and jump if nonzero
 
+- 宣 - register subroutine
+- 終 - finish subroutine
+- 嗌 - invoke subroutine
+
 # printing
 
 - 報 - peek and print to terminal

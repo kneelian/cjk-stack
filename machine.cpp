@@ -152,6 +152,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x7d42: // 終 - conclude = zung1
 				destination.push_back({CONCLUDE, {0,0}});
 				break;
+			case 0x55cc: // 嗌 - yell = jik1
+				destination.push_back({INVOKE, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -230,7 +233,7 @@ uint32_t machine_c::run(int ticks)
 				if(swap_ab()) { break; }
 				else
 				{
-					std::printf("FATAL ERROR: 擰 @ %d after %d failed; terminating", int(command_ptr), elapsed);
+					std::printf("FATAL ERROR: 擰 @ %d after %d failed; terminating\n", int(command_ptr), elapsed);
 					goto exit_loop;
 				}
 				break;
@@ -268,7 +271,7 @@ uint32_t machine_c::run(int ticks)
 						break;
 
 					default:
-						std::printf("type error: cannot round non-numeric typeid %#x", temp_vmt.type);
+						std::printf("type error: cannot round non-numeric typeid %#x\n", temp_vmt.type);
 						break;
 				}
 				push_main(temp_vmt);
@@ -297,7 +300,7 @@ uint32_t machine_c::run(int ticks)
 						break;
 
 					default:
-						std::printf("type error: cannot round non-numeric typeid %#x", temp_vmt.type);
+						std::printf("type error: cannot bend non-numeric typeid %#x\n", temp_vmt.type);
 						break;
 				}
 				push_main(temp_vmt);
@@ -527,7 +530,7 @@ uint32_t machine_c::run(int ticks)
 						} 
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot add non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot add non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -547,7 +550,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot add non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot add non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -610,7 +613,7 @@ uint32_t machine_c::run(int ticks)
 						} 
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot sub non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot sub non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -630,7 +633,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot sub non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot sub non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -681,7 +684,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot div non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -704,7 +707,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot div non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -765,7 +768,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot mul non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot mul non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -785,7 +788,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot div non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -837,7 +840,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot mod non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot mod non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -857,7 +860,7 @@ uint32_t machine_c::run(int ticks)
 						}
 						else if(temp_vmt.type > 0x06)
 						{
-							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							std::printf("type error: cannot mod non-numeric typeid %#x\n", temp_vmt.type);
 							push_main(temp_vmt);
 							temp_vmt={temp_type, temp_i32};
 							break;
@@ -910,7 +913,7 @@ uint32_t machine_c::run(int ticks)
 						break;
 
 					default:
-						std::printf("type error: cannot log_e non-numeric typeid %#x", temp_vmt.type);
+						std::printf("type error: cannot log_e non-numeric typeid %#x\n", temp_vmt.type);
 						break;
 				}
 
@@ -950,7 +953,7 @@ uint32_t machine_c::run(int ticks)
 						break;
 
 					default:
-						std::printf("type error: cannot root non-numeric typeid %#x", temp_vmt.type);
+						std::printf("type error: cannot root non-numeric typeid %#x\n", temp_vmt.type);
 						break;
 				}
 				temp_vmt = pop_main();
@@ -1016,7 +1019,7 @@ uint32_t machine_c::run(int ticks)
 						break;
 
 					default:
-						std::printf("type error: cannot pow non-numeric typeid %#x", temp_vmt.type);
+						std::printf("type error: cannot pow non-numeric typeid %#x\n", temp_vmt.type);
 						break;
 				}
 				temp_vmt = pop_main();
@@ -1115,12 +1118,103 @@ uint32_t machine_c::run(int ticks)
 				break;
 			}
 
-			case REGISTER: // TODO
-			{ break; }
-			case CONCLUDE: // TODO
-			{ break; }
+			case REGISTER:
+			/*
+				peeks at following instruction,
+				throws if reserved keyword,
+				otherwise registers it as a
+				subroutine label with the address
+				of this instruction, and
+				modifies itself into a NOP
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 宣 REGISTER  @ %d\n", int(command_ptr));}
+				if(commands[(command_ptr+1) % commands_sz].instruction != LABEL)
+				{
+					std::printf("FATAL ERROR: 宣 @ %d followed by non-label; terminating\n", int(command_ptr));
+					goto exit_loop;
+				} else
+				registry[commands[(command_ptr+1) % commands_sz].value.value] = command_ptr;
+				commands[command_ptr] = {NOTHING,{0,0}};
+
+				while(command_ptr < commands_sz)
+				{
+
+					command_ptr++;
+					switch(commands[command_ptr].instruction)
+					{
+						case REGISTER:
+							std::printf("FATAL ERROR: 宣 @ %d encountered after another 宣; terminating\n", int(command_ptr));
+							goto exit_loop;
+
+						case CONCLUDE:
+							if(__DEBUG) { std::printf("debug: found 終 @ %d\n", int(command_ptr));}
+							goto end_reg;
+
+						case LABEL:
+							if(__DEBUG) { std::printf("debug: label %#x @ %d\n", commands[command_ptr].value.value, int(command_ptr));}
+							break;
+
+						default:
+							if(__DEBUG) { std::printf("debug: skipping over %ld\n", command_ptr); }
+							break;
+					}
+				} end_reg:
+
+				command_ptr %= commands_sz;
+				break;
+			}
+			case CONCLUDE:
+			/*
+				functionally like JUMP, but the
+				REGISTER instruction has special
+				behaviour with this one, using it
+				to finish its search
+			*/
+			{
+			 	if(__DEBUG) { std::printf("debug: 終 CONCLUDE  @ %d\n", int(command_ptr));}
+				temp_vmt = pop_side();
+				if(temp_vmt.type != ADDR_T)
+				{
+					std::printf("type error: cannot jump to non-ADDR_T (%#x) @ %d\n", temp_vmt.type, int(command_ptr));
+					push_side(temp_vmt);
+				}
+				command_ptr = temp_vmt.value;
+				temp_vmt = {0,0};
+				break; 
+			}
 			case LABEL:    // TODO
 			{ break; }
+
+			case INVOKE: // 嗌
+			/*
+				peeks at following instruction,
+				throws if reserved keyword,
+				otherwise looks it up in registry,
+				ignores if missing
+				pushes command pointer to side stack
+				jumps to label
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 嗌 INVOKE    @ %d\n", int(command_ptr));}
+				if(commands[(command_ptr+1) % commands_sz].instruction != LABEL)
+				{
+					std::printf("FATAL ERROR: 嗌 @ %d followed by non-label; terminating\n", int(command_ptr));
+					goto exit_loop;
+				} else
+				{
+					if
+					(
+						auto search = registry.find(commands[(command_ptr+1) % commands_sz].value.value);
+						search != registry.end()
+					)
+					{
+						push_side({ADDR_T, command_ptr});
+						command_ptr = search->second; 
+					}
+					else break;
+				}
+			}
 
 			/*
 				print instructions

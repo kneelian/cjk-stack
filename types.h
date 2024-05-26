@@ -100,6 +100,7 @@ enum insn_t: uint16_t
 
     REGISTER = 0x5BA3, // 宣
     CONCLUDE = 0x7d42, // 終
+    INVOKE   = 0x55cc, // 嗌
 
     PHOLD= 0xfffd,
     LABEL= 0xfffe,
