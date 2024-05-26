@@ -990,7 +990,8 @@ uint32_t machine_c::run(int ticks)
 
 			case POW: 
 			/*
-				(num)(num) -> (f24)
+				(i24)(i24) -> (i24)
+				(f24)(num) -> 
 				base  root
 			*/
 			// TODO: i48
@@ -1030,25 +1031,40 @@ uint32_t machine_c::run(int ticks)
 					{
 						std::printf("insufficent arguments or unhandled error on stack\n");
 						push_main(temp_vmt);
-						if(temp_type < 0x05)
+						if((temp_type < 0x05) || (temp_type == ADDR_T))
 							{ push_main({temp_type, temp_i32}); } 
-						else
+						else 
 							{ push_main({temp_type, std::bit_cast<uint32_t>(temp_f32) >> 8}); }
+						}
 						goto end_pow;
 					}
 
 					case  INT24_T:
 					case UINT24_T:
 					case   ADDR_T:
-						temp_f32 = std::pow(temp_f32, float(temp_vmt.value));
+						if((temp_type < 0x05) || (temp_type == ADDR_T))
+							temp_i32 = std::pow(temp_i32, temp_vmt.value);
+						else
+							temp_f32 = std::pow(temp_f32, temp_vmt.value);
 						break;
 
 					case  F24_T:
-						temp_f32 = std::pow(temp_f32, std::bit_cast<float>(temp_vmt.value << 8));
+						if((temp_type < 0x05) || (temp_type == ADDR_T))
+							temp_i32 = std::pow(temp_i32, std::bit_cast<float>(temp_vmt.value << 8));
+						else
+							temp_f32 = std::pow(temp_f32, std::bit_cast<float>(temp_vmt.value << 8));
 						break;
 				}
+				if(temp_type == F24_T)
+				{
+					temp_vmt = {F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8};
+				}
+				else
+				{
+					temp_vmt = {INT24_T, uint32_t(temp_i32)};
+				}
 
-				push_main({F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8});
+				push_main(temp_vmt);
 
 				end_pow:
 				break;
@@ -1139,7 +1155,6 @@ uint32_t machine_c::run(int ticks)
 
 				while(command_ptr < commands_sz)
 				{
-
 					command_ptr++;
 					switch(commands[command_ptr].instruction)
 					{
@@ -1211,9 +1226,11 @@ uint32_t machine_c::run(int ticks)
 					{
 						push_side({ADDR_T, command_ptr});
 						command_ptr = search->second; 
+						break;
 					}
 					else break;
 				}
+				break;
 			}
 
 			/*
