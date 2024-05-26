@@ -1035,7 +1035,6 @@ uint32_t machine_c::run(int ticks)
 							{ push_main({temp_type, temp_i32}); } 
 						else 
 							{ push_main({temp_type, std::bit_cast<uint32_t>(temp_f32) >> 8}); }
-						}
 						goto end_pow;
 					}
 
