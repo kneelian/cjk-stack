@@ -42,6 +42,15 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             case 0x6e1b: // 減 - sub = gam2
             	destination.push_back({SUB, {0,0}});
             	break;
+            case 0x9664: // 除 - div = cui3
+            	destination.push_back({DIV, {0,0}});
+            	break;
+            case 0x4e58: // 乘 - mul = sing4
+            	destination.push_back({MUL, {0,0}});
+            	break;
+            case 0x9918: // 餘 - remainder = jyu4
+            	destination.push_back({MOD, {0,0}});
+            	break;
             case 0x5638: // 嘸 - nothing = m4
                 destination.push_back({NOTHING,{0,0}});
                 break;
@@ -306,7 +315,7 @@ uint32_t machine_c::run(int ticks)
 				   (f24) -> (f24); 
 	        (i48h)(i48l) -> (i48h)(i48l) 
 	                    add 1
-			*/
+			*/ // TODO : fix i48
 			{
 				if(__DEBUG) { std::printf("debug: 增 INCREMENT @ %d\n", int(command_ptr));}
 				temp_vmt = pop_main();
@@ -359,7 +368,7 @@ uint32_t machine_c::run(int ticks)
 				   (f24) -> (f24); 
 	        (i48h)(i48l) -> (i48h)(i48l) 
 	                    sub 1
-			*/
+			*/ // TODO : fix i48
 			{
 				if(__DEBUG) { std::printf("debug: 低 DECREMENT @ %d\n", int(command_ptr));}
 				temp_vmt = pop_main();
@@ -413,7 +422,7 @@ uint32_t machine_c::run(int ticks)
 				 +   -----> (i48h)(i48l);
 	        (i48h)(i48l) 
 	                    add top two
-			*/
+			*/ // TODO : i48
 			{
 				if(__DEBUG) { std::printf("debug: 加 ADD       @ %d\n", int(command_ptr));}
 				temp_vmt = pop_main();
@@ -475,6 +484,17 @@ uint32_t machine_c::run(int ticks)
 				temp_vmt = {0, 0};
 				break;
 			}
+			/*
+			case 0x9664: // 除 - div = cui3
+            	destination.push_back({DIV, {0,0}});
+            	break;
+            case 0x4e58: // 乘 - mul = sing4
+            	destination.push_back({MUL, {0,0}});
+            	break;
+            case 0x9918: // 餘 - remainder = jyu4
+            	destination.push_back({MOD, {0,0}});
+            	break;
+			*/
 
 			case SUB:
 			/*
@@ -482,10 +502,10 @@ uint32_t machine_c::run(int ticks)
 				   (u24)(u24) -> (u24); 
 				   (f24)(f24) -> (f24); 
 	        (i48h)(i48l)
-				 +   -----> (i48h)(i48l);
+				 -   -----> (i48h)(i48l);
 	        (i48h)(i48l) 
 	                    sub top two
-			*/
+			*/ // TODO : i48
 			{
 				if(__DEBUG) { std::printf("debug: 減 SUB       @ %d\n", int(command_ptr));}
 				temp_vmt = pop_main();
@@ -543,6 +563,239 @@ uint32_t machine_c::run(int ticks)
 						temp_vmt.type = F24_T;
 						break;
 				}
+				push_main(temp_vmt);
+				temp_vmt = {0, 0};
+				break;
+			}
+						case DIV:
+			/*
+				除 (i24)(i24) -> (i24); 
+				   (u24)(u24) -> (u24); 
+				   (f24)(f24) -> (f24); 
+	        (i48h)(i48l)
+				 /   -----> (i48h)(i48l);
+	        (i48h)(i48l) 
+	                    div top with top-1
+			*/ // TODO : i48
+			{
+				if(__DEBUG) { std::printf("debug: 除 DIV       @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT DIV AN ERROR!\n");
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_type = temp_vmt.type;
+						temp_i32  = temp_vmt.value;
+						temp_vmt  = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						if(temp_vmt.value)
+							temp_i32 /= temp_vmt.value;
+						else
+							temp_i32 =  0xff'ff'ff;
+						temp_vmt = {temp_type, temp_i32};
+						break;
+
+					case F24_T:
+						temp_f32 
+							= std::bit_cast<float>(temp_vmt.value << 8);
+						temp_vmt = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						else if(temp_vmt.type < 0x05)
+						{
+							if(temp_vmt.value)
+								temp_f32 /= float(temp_vmt.value);
+							else
+								temp_f32  = std::bit_cast<float>(0x7F'80'00'00);
+						} else
+						{
+							if(temp_vmt.value)
+								temp_f32 /= std::bit_cast<float>(temp_vmt.value << 8); 
+							else
+								temp_f32  = std::bit_cast<float>(0x7F'80'00'00);
+								
+						}
+						temp_vmt.value 
+							= std::bit_cast<uint32_t>(temp_f32) >> 8;
+						temp_vmt.type = F24_T;
+						break;
+				}
+				push_main(temp_vmt);
+				temp_vmt = {0, 0};
+				break;
+			}
+			case MUL:
+			/*
+				乘 (i24)(i24) -> (i24); 
+				   (u24)(u24) -> (u24); 
+				   (f24)(f24) -> (f24); 
+	        (i48h)(i48l)
+				 *   -----> (i48h)(i48l);
+	        (i48h)(i48l) 
+	                    mul top with top-1
+			*/ // TODO : i48
+			{
+				if(__DEBUG) { std::printf("debug: 乘 MUL       @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT MUL AN ERROR!\n");
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_type = temp_vmt.type;
+						temp_i32  = temp_vmt.value;
+						temp_vmt  = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot mul non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						temp_i32 *= temp_vmt.value;
+						temp_vmt = {temp_type, temp_i32};
+						break;
+
+					case F24_T:
+						temp_f32 
+							= std::bit_cast<float>(temp_vmt.value << 8);
+						temp_vmt = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						else if(temp_vmt.type < 0x05)
+						{ temp_f32 *= float(temp_vmt.value); } else
+						{ temp_f32 *= std::bit_cast<float>(temp_vmt.value << 8); }
+
+						temp_vmt.value 
+							= std::bit_cast<uint32_t>(temp_f32) >> 8;
+						temp_vmt.type = F24_T;
+						break;
+				}
+
+				push_main(temp_vmt);
+				temp_vmt = {0, 0};
+				break;
+			}
+			case MOD:
+			/*
+				餘 (i24)(i24) -> (i24); 
+				   (u24)(u24) -> (u24); 
+				   (f24)(f24) -> (f24); 
+	        (i48h)(i48l)
+				 %   -----> (i48h)(i48l);
+	        (i48h)(i48l) 
+	                    mod top with top-1
+			*/ // TODO : i48
+			{ 
+				if(__DEBUG) { std::printf("debug: 餘 MOD       @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT MOD AN ERROR!\n");
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_type = temp_vmt.type;
+						temp_i32  = temp_vmt.value;
+						temp_vmt  = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot mod non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						temp_i32 %= temp_vmt.value;
+						temp_vmt = {temp_type, temp_i32};
+						break;
+
+					case F24_T:
+						temp_f32 
+							= std::bit_cast<float>(temp_vmt.value << 8);
+						temp_vmt = pop_main();
+						if(temp_vmt.type == ERROR_T)
+						{
+							std::printf("insufficent arguments or unhandled error on stack\n");
+							break;
+						}
+						else if(temp_vmt.type > 0x06)
+						{
+							std::printf("type error: cannot div non-numeric typeid %#x", temp_vmt.type);
+							push_main(temp_vmt);
+							temp_vmt={temp_type, temp_i32};
+							break;
+						}
+						else if(temp_vmt.type < 0x05)
+						{
+							temp_i32 =  int(temp_f32 / float(temp_vmt.value));
+							temp_f32 =  (temp_f32 / float(temp_vmt.value)) - temp_i32;
+						} else
+						{
+							temp_i32 =  int(temp_f32 / std::bit_cast<float>(temp_vmt.value << 8));
+							temp_f32 =  (temp_f32 / std::bit_cast<float>(temp_vmt.value << 8)) - temp_i32; 
+						}
+
+						temp_vmt.value 
+							= std::bit_cast<uint32_t>(temp_f32) >> 8;
+						temp_vmt.type = F24_T;
+						break;
+				}
+
 				push_main(temp_vmt);
 				temp_vmt = {0, 0};
 				break;

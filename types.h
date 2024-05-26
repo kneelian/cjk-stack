@@ -43,6 +43,9 @@ enum insn_t: uint16_t
 
     ADD      = 0x52a0, // 加
     SUB      = 0x6e1b, // 減
+    DIV      = 0x9664, // 除
+    MUL      = 0x4e58, // 乘
+    MOD      = 0x9918, // 餘
 
     NOTHING  = 0x5638, // 嘸
 

@@ -18,17 +18,17 @@
 
 for numbers 0x0 .. 0xa:
 
-- 零
-- 壹
-- 貳
-- 參
-- 肆
-- 伍
-- 陸
-- 柒
-- 捌
-- 玖
-- 拾
+- 零 - zero
+- 壹 - one
+- 貳 - two
+- 參 - three
+- 肆 - four
+- 伍 - five
+- 陸 - six
+- 柒 - seven
+- 捌 - eight
+- 玖 - nine
+- 拾 - ten
 
 # arithmetics
 
@@ -36,6 +36,9 @@ for numbers 0x0 .. 0xa:
 - 低 - decrement
 - 加 - add
 - 減 - subtract
+- 除 - divide
+- 乘 - multiply
+- 餘 - remainder/modulo
 
 # flow control
 
