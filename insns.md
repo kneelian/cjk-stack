@@ -40,6 +40,10 @@ for numbers 0x0 .. 0xa:
 - 乘 - multiply
 - 餘 - remainder/modulo
 
+- 基 - log base e
+- 根 - root
+- 冪 - pow
+
 # flow control
 
 - 安 - push current location to side

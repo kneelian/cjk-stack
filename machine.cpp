@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "machine.h"
 #include "types.h"
 #include "to_hanzi.h"
@@ -50,6 +52,15 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
             	break;
             case 0x9918: // 餘 - remainder = jyu4
             	destination.push_back({MOD, {0,0}});
+            	break;
+            case 0x57FA: // 基 - base = gei1
+            	destination.push_back({LOG_E, {0,0}});
+            	break;
+            case 0x6839: // 根 - root = gan1
+            	destination.push_back({ROOT, {0,0}});
+            	break;
+            case 0x51aa: // 冪 - exponent = mik6
+            	destination.push_back({POW, {0,0}});
             	break;
             case 0x5638: // 嘸 - nothing = m4
                 destination.push_back({NOTHING,{0,0}});
@@ -567,7 +578,7 @@ uint32_t machine_c::run(int ticks)
 				temp_vmt = {0, 0};
 				break;
 			}
-						case DIV:
+			case DIV:
 			/*
 				除 (i24)(i24) -> (i24); 
 				   (u24)(u24) -> (u24); 
@@ -798,6 +809,174 @@ uint32_t machine_c::run(int ticks)
 
 				push_main(temp_vmt);
 				temp_vmt = {0, 0};
+				break;
+			}
+
+			case LOG_E: // top log_e (numeric)->(f24)
+			// TODO : i48
+			{
+				if(__DEBUG) { std::printf("debug: 基 LOG_E     @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT LOG_E AN ERROR!\n");
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_f32 = float(temp_vmt.value);
+						temp_f32 = std::log(temp_f32);
+						temp_vmt = {F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8};
+						break;
+
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(temp_vmt.value << 8);
+						temp_f32 = std::log(temp_f32);
+						temp_vmt = {F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8};
+						break;
+
+					default:
+						std::printf("type error: cannot log_e non-numeric typeid %#x", temp_vmt.type);
+						break;
+				}
+
+				push_main(temp_vmt);
+				temp_vmt = {0, 0};
+				break;
+			}
+
+			case ROOT:
+			/*
+				(num)(num) -> (f24)
+				base  root
+			*/
+			// TODO: i48
+			{
+				if(__DEBUG) { std::printf("debug: 根 ROOT      @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				temp_type = temp_vmt.type;
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT ROOT AN ERROR!\n");
+						push_main(temp_vmt);
+						goto end_root;
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_i32 = temp_vmt.value;
+						temp_f32 = float(temp_vmt.value);
+						break;
+
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(temp_vmt.value << 8);
+						break;
+
+					default:
+						std::printf("type error: cannot root non-numeric typeid %#x", temp_vmt.type);
+						break;
+				}
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+					{
+						std::printf("insufficent arguments or unhandled error on stack\n");
+						push_main(temp_vmt);
+						if(temp_type < 0x05)
+							{ push_main({temp_type, temp_i32}); } 
+						else
+							{ push_main({temp_type, std::bit_cast<uint32_t>(temp_f32) >> 8}); }
+						goto end_root;
+					}
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_f32 = std::pow(temp_f32, 1.0 / float(temp_vmt.value));
+						break;
+
+					case  F24_T:
+						temp_f32 = std::pow(temp_f32, 1.0 / std::bit_cast<float>(temp_vmt.value << 8));
+						break;
+				}
+
+				push_main({F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8});
+
+				end_root:
+				break;
+			}
+
+			case POW: 
+			/*
+				(num)(num) -> (f24)
+				base  root
+			*/
+			// TODO: i48
+			{
+				if(__DEBUG) { std::printf("debug: 冪 POW       @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				temp_type = temp_vmt.type;
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+						std::printf("CANNOT POW AN ERROR!\n");
+						push_main(temp_vmt);
+						goto end_pow;
+						break;
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_i32 = temp_vmt.value;
+						temp_f32 = float(temp_vmt.value);
+						break;
+
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(temp_vmt.value << 8);
+						break;
+
+					default:
+						std::printf("type error: cannot pow non-numeric typeid %#x", temp_vmt.type);
+						break;
+				}
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case ERROR_T:
+					{
+						std::printf("insufficent arguments or unhandled error on stack\n");
+						push_main(temp_vmt);
+						if(temp_type < 0x05)
+							{ push_main({temp_type, temp_i32}); } 
+						else
+							{ push_main({temp_type, std::bit_cast<uint32_t>(temp_f32) >> 8}); }
+						goto end_pow;
+					}
+
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_f32 = std::pow(temp_f32, float(temp_vmt.value));
+						break;
+
+					case  F24_T:
+						temp_f32 = std::pow(temp_f32, std::bit_cast<float>(temp_vmt.value << 8));
+						break;
+				}
+
+				push_main({F24_T, std::bit_cast<uint32_t>(temp_f32) >> 8});
+
+				end_pow:
 				break;
 			}
 

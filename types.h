@@ -47,6 +47,10 @@ enum insn_t: uint16_t
     MUL      = 0x4e58, // 乘
     MOD      = 0x9918, // 餘
 
+    LOG_E    = 0x57fa, // 基
+    ROOT     = 0x6839, // 根
+    POW      = 0x51aa, // 冪
+
     NOTHING  = 0x5638, // 嘸
 
     REPORT   = 0x5831, // 报
