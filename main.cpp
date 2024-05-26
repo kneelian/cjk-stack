@@ -26,11 +26,28 @@ int main(int argc, char** argv)
 
 	machine_c machine;
 
-	std::string example_string = argc>1?argv[1]:
-	"擰伍玖加擰 零壹fib(安換孖紡換孖紡加報 擰換低換擰 落)end死" // 叛
-	//"零增孖增孖紡換孖紡死";
-	// 換孖紡換孖紡加
-	;
+	std::string example_string;
+
+	if(argc > 2)
+	{
+		std::FILE* input = std::fopen(argv[1], "r");
+
+		int tmp = 0;
+		while ((tmp = std::fgetc(input)) != EOF) 
+		{
+			example_string.push_back(tmp);
+		}
+
+		std::fclose(input);
+	}
+	else
+	{
+		example_string = //argc>1?argv[1]:
+		"擰伍玖加擰 零壹fib(安換孖紡換孖紡加報 擰換低換擰 落)end死" // 叛
+		//"零增孖增孖紡換孖紡死";
+		// 換孖紡換孖紡加
+		;
+	}
 	machine.load(example_string);
 	uint32_t lexed_count = machine.lex();
 

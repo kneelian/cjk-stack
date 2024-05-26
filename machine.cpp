@@ -298,7 +298,6 @@ uint32_t machine_c::run(int ticks)
 				break;
 			}
 
-
 			/*
 				modifying stack contents without ops
 			*/
