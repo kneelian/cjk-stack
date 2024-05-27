@@ -30,7 +30,8 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
         switch(codepoint)
         {
         	case 0x00 ... 0x1f:
-        		destination.push_back({ERROR,{0,0}});
+        		//destination.push_back({ERROR,{0,0}});
+        		// going to ignore these
         		break;
             case 0x20 ... 0x2e79: // everything up to CJK is a comment for now
                 if(__DEBUG) { destination.push_back({COMM, {COMM_T, codepoint}}); }
@@ -154,6 +155,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 				break;
 			case 0x55cc: // 嗌 - yell = jik1
 				destination.push_back({INVOKE, {0,0}});
+				break;
+			case 0x79fb: // 移 - transplant/move = ji4
+				destination.push_back({TRANSPL, {0,0}});
 				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
@@ -370,6 +374,11 @@ uint32_t machine_c::run(int ticks)
 				if(__DEBUG) { std::printf("debug: 孖 TWIN      @ %d\n", int(command_ptr));}
 				temp_vmt = peek_main();
 				push_main(temp_vmt);
+				break;
+
+			case TRANSPL: // 移 (x)a -> (x)b move from main to side
+				if(__DEBUG) { std::printf("debug: 移 TRANSPL   @ %d\n", int(command_ptr));}
+				push_side(pop_main());
 				break;
 
 			case SWAP: // 換 - swap = wun6 (a)(b) -> (b)(a)

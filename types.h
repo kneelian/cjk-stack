@@ -41,6 +41,11 @@ enum insn_t: uint16_t
     ZERO = 0x0000,
     COMM = 0x0001,
 
+    NOTHING  = 0x5638, // 嘸
+    DIE      = 0x6b7b, // 死
+    BETRAY   = 0x53DB, // 叛
+
+    INCREMENT= 0x589e, // 增
     DECREMENT= 0x4f4e, // 低
 
     ADD      = 0x52a0, // 加
@@ -53,30 +58,18 @@ enum insn_t: uint16_t
     ROOT     = 0x6839, // 根
     POW      = 0x51aa, // 冪
 
-    NOTHING  = 0x5638, // 嘸
+    REPORT   = 0x5831, // 报 
 
-    REPORT   = 0x5831, // 报
-
-    INCREMENT= 0x589e, // 增
-
+    TRANSPL  = 0x79fb, // 移
     TWIN     = 0x5b56, // 孖
-
-    WHERE    = 0x5b89, // 安
-
     SWAP     = 0x63db, // 換
-
+    SWAP3    = 0x7d21, // 紡
     ROTATE   = 0x64f0, // 擰
-
     ABANDON  = 0x68c4, // 棄
-
-    DIE      = 0x6b7b, // 死
-
     DESTROY  = 0x6bb2, // 殲
 
-    SWAP3    = 0x7d21, // 紡
-
+    WHERE    = 0x5b89, // 安
     FALL     = 0x843d, // 落
-
     JUMP     = 0x8df3, // 跳
 
     PSH_ZERO = 0x96f6, // 零
@@ -91,10 +84,7 @@ enum insn_t: uint16_t
     PSH_NINE = 0x7396, // 玖
     PSH_TEN  = 0x62fe, // 拾
 
-    BETRAY   = 0x53DB, // 叛
-
     TYPE     = 0x985e, // 類
-
     ROUND    = 0x6574, // 整
     BEND     = 0x5f4e, // 彎
 

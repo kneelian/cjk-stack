@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
 	if(__DEBUG)
 	{
-		std::printf("program: %.*s\n", int(machine.program.length()), machine.program.data());
+		std::printf("program: \n%.*s\n", int(machine.program.length()), machine.program.data());
 		std::printf("-----\nstack dump:\n - stack A: ");
 		for(auto i : machine.A)
 		{
