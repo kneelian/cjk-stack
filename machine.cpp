@@ -159,6 +159,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x79fb: // 移 - transplant/move = ji4
 				destination.push_back({TRANSPL, {0,0}});
 				break;
+			case 0x8d8a: // 越 - superior/exceed = jyut6
+				destination.push_back({BIGGER, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -1075,6 +1078,86 @@ uint32_t machine_c::run(int ticks)
 				push_main(temp_vmt);
 
 				end_pow:
+				break;
+			}
+			/*
+				conditionals
+			*/
+			case BIGGER:
+			/*
+				(num)(num) -> ()
+				pops two numbers from main
+				compares them
+				pushes predicate to side:
+					+1 if n1 >  n2
+					 0 if n1 <= n2
+					-1 if unknown
+			*/
+			// TODO : i48 support
+			{
+				if(__DEBUG) { std::printf("debug: 越 BIGGER    @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				temp_type = temp_vmt.type;
+				switch(temp_type)
+				{
+					case INT24_T:
+					case UINT24_T:
+						temp_i32 = temp_vmt.value;
+						break;
+
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(temp_vmt.value << 8);
+						if(std::isnan(temp_f32)) { push_side({PRED_T, 0xffffff}); goto end_bigger; }
+						break;
+
+					default:
+						push_side({PRED_T, 0xffffff});
+						goto end_bigger;
+				}
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case INT24_T:
+					case UINT24_T:
+						if(temp_type != F24_T)
+						{
+							if(temp_vmt.value > temp_i32)
+								push_side({PRED_T, 0x1});
+							else
+								push_side({PRED_T, 0x0});
+						} else
+						{
+							if(temp_vmt.value > temp_f32)
+								push_side({PRED_T, 0x1});
+							else
+								push_side({PRED_T, 0x0});
+						}
+						break;
+
+					case F24_T:
+						if(std::isnan(std::bit_cast<float>(temp_vmt.value << 8))) 
+							{ push_side({PRED_T, 0xffffff}); goto end_bigger; }
+						if(temp_type != F24_T)
+						{
+							if(std::bit_cast<float>(temp_vmt.value << 8) > temp_i32)
+								push_side({PRED_T, 0x1});
+							else
+								push_side({PRED_T, 0x0});
+						} else
+						{
+							if(std::bit_cast<float>(temp_vmt.value << 8) > temp_f32)
+								push_side({PRED_T, 0x1});
+							else
+								push_side({PRED_T, 0x0});
+						}
+
+					default:
+						push_side({PRED_T, 0xffffff});
+						goto end_bigger;
+				}
+
+				end_bigger:
 				break;
 			}
 
