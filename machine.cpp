@@ -162,6 +162,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x8d8a: // 越 - superior/exceed = jyut6
 				destination.push_back({BIGGER, {0,0}});
 				break;
+			case 0x6562: // 敢 - can it be so? = gam2
+				destination.push_back({IS_IT_SO, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -1158,6 +1161,30 @@ uint32_t machine_c::run(int ticks)
 				}
 
 				end_bigger:
+				break;
+			}
+			case IS_IT_SO:
+			/* 
+				consumes predicate from side
+				if true, skips next instruction
+				if false, does nothing
+				if unknown, does nothing
+			*/
+			{
+				if(__DEBUG) { std::printf("debug: 敢 IS_IT_SO  @ %d\n", int(command_ptr));}
+				temp_vmt = pop_side();
+				if(temp_vmt.type != PRED_T)
+				{
+					push_side(temp_vmt);
+					goto end_isitso;
+				}
+
+				if(temp_vmt.value == 1)
+				{
+					command_ptr = (command_ptr + 1) % commands_sz;
+				} else { }
+
+				end_isitso:
 				break;
 			}
 

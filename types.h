@@ -95,6 +95,7 @@ enum insn_t: uint16_t
     INVOKE   = 0x55cc, // 嗌
 
     BIGGER   = 0x8d8a, // 越
+    IS_IT_SO = 0x6562, // 敢
 
     PHOLD= 0xfffd,
     LABEL= 0xfffe,
