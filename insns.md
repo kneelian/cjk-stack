@@ -49,6 +49,11 @@ for numbers 0x0 .. 0xa:
 - 整 - round (from float)
 - 彎 - bend (to float)
 
+# conditionals
+
+- 越 - bigger (n1 >? n2), produces predicate
+- 敢 - is-it-so? (consumes predicate, skips next insn if true)
+
 # flow control
 
 - 安 - push current location to side

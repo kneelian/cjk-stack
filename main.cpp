@@ -96,6 +96,9 @@ const char* type_as_string(uint32_t in)
 
         case TYPE_T:  return "typ"; break;
 
+        case LABL_T:  return "lbl"; break;
+        case PRED_T:  return "prd"; break;
+
         case CUSTOM_T:return "usr"; break;
 
         case COMM_T:  return "com"; break;

@@ -1163,6 +1163,7 @@ uint32_t machine_c::run(int ticks)
 				end_bigger:
 				break;
 			}
+
 			case IS_IT_SO:
 			/* 
 				consumes predicate from side
@@ -1181,8 +1182,24 @@ uint32_t machine_c::run(int ticks)
 
 				if(temp_vmt.value == 1)
 				{
-					command_ptr = (command_ptr + 1) % commands_sz;
-				} else { }
+					while(command_ptr++ < commands_sz)
+					{
+						if(__DEBUG) { std::printf("debug: SKIPPING     @ %d\n", int(command_ptr));}
+						switch(commands[command_ptr].instruction)
+						{
+							case ZERO:
+							case COMM:
+							case PHOLD:
+							case LABEL:
+							case ERROR:
+							case NOTHING:
+								
+								continue;
+							default:
+								goto end_isitso;
+						}
+					}
+				} else { break; }
 
 				end_isitso:
 				break;
