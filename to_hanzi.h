@@ -9,6 +9,7 @@ uint32_t hanzi_digit(int32_t num);
 void to_hanzi(std::string& tgt, int32_t num)
 {
 	tgt.clear();
+	if(num == 0) { utf8::append(0x3007, tgt); return; }
 	int32_t top = num / 10000;
 	int32_t bot = num % 10000;
 	if(top)
