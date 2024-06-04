@@ -168,6 +168,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x968E: // 階 - steps/scale = gaai1
 				destination.push_back({FACTL, {0,0}});
 				break;
+			case 0x54e5: // 哥 - cousin/older bro = go1
+				destination.push_back({COUSIN, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -375,13 +378,19 @@ uint32_t machine_c::run(int ticks)
 				push_main({INT24_T, 0x09});
 				break;
 			case PSH_TEN:
-				if(__DEBUG) { std::printf("debug: 拾 PSH_TEN  @ %d\n", int(command_ptr));}
+				if(__DEBUG) { std::printf("debug: 拾 PSH_TEN   @ %d\n", int(command_ptr));}
 				push_main({INT24_T, 0x0a});
 				break;
 
 			case TWIN: // 孖 (x) -> (x)(x) double the top of stack
 				if(__DEBUG) { std::printf("debug: 孖 TWIN      @ %d\n", int(command_ptr));}
 				temp_vmt = peek_main();
+				push_main(temp_vmt);
+				break;
+
+			case COUSIN: // 哥 (x) -> (x) | (x) copy top of side to main
+				if(__DEBUG) { std::printf("debug: 哥 COUSIN    @ %d\n", int(command_ptr));}
+				temp_vmt = peek_side();
 				push_main(temp_vmt);
 				break;
 
@@ -440,6 +449,7 @@ uint32_t machine_c::run(int ticks)
 						temp_f32 += 1.0;
 						temp_vmt.value 
 							= std::bit_cast<uint32_t>(temp_f32) >> 8;
+						break;
 					
 					case INT48L_T:
 						temp_i64 = temp_vmt.value;

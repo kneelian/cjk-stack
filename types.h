@@ -65,6 +65,7 @@ enum insn_t: uint16_t
 
     TRANSPL  = 0x79fb, // 移
     TWIN     = 0x5b56, // 孖
+    COUSIN   = 0x54e5, // 哥
     SWAP     = 0x63db, // 換
     SWAP3    = 0x7d21, // 紡
     ROTATE   = 0x64f0, // 擰

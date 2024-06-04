@@ -14,6 +14,8 @@
 - 換 - swap top two: ab -> ba
 - 紡 - rotate top three: abc -> cab
 
+- 哥 - copy from side to main
+
 # push constants
 
 for numbers 0x0 .. 0xa:
@@ -58,9 +60,9 @@ for numbers 0x0 .. 0xa:
 
 # flow control
 
-- 安 - push current location to side
-- 跳 - pop side and jump unconditionally
-- 落 - pop side and jump if nonzero
+- 安 - where? push current location to side
+- 跳 - jump - pop side and jump unconditionally
+- 落 - fall - pop side and jump if nonzero
 
 - 宣 - register subroutine
 - 終 - finish subroutine
