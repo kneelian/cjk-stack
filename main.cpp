@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
 	if(__DEBUG) { std::printf("-----------\n"); }
 
-	int runtime = machine.run(512);
+	int runtime = machine.run(1<<16);
 
 	std::printf("-----------\n");
 
