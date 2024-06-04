@@ -14,6 +14,7 @@
 - 換 - swap top two: ab -> ba
 - 紡 - rotate top three: abc -> cab
 
+- 孖 - double top of main
 - 哥 - copy from side to main
 
 # push constants
@@ -40,7 +41,7 @@ for numbers 0x0 .. 0xa:
 - 減 - subtract
 - 除 - divide
 - 乘 - multiply
-- 餘 - remainder/modulo
+- 餘 - mod/remainder/modulo
 
 - 基 - log base e
 - 根 - root
