@@ -44,6 +44,8 @@ for numbers 0x0 .. 0xa:
 - 根 - root
 - 冪 - pow
 
+- 階 - factorial of integer
+
 # type conversion
 
 - 整 - round (from float)

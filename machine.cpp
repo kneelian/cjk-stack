@@ -165,6 +165,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x6562: // 敢 - can it be so? = gam2
 				destination.push_back({IS_IT_SO, {0,0}});
 				break;
+			case 0x968E: // 階 - steps/scale = gaai1
+				destination.push_back({FACTL, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -291,7 +294,7 @@ uint32_t machine_c::run(int ticks)
 			case BEND: // 彎 (i24) -> (f24)
 			// TODO : i48
 			{
-				if(__DEBUG) { std::printf("debug: 彎 BEND     @ %d\n", int(command_ptr));}
+				if(__DEBUG) { std::printf("debug: 彎 BEND      @ %d\n", int(command_ptr));}
 				temp_vmt = pop_main();
 				switch(temp_vmt.type)
 				{
@@ -1083,6 +1086,118 @@ uint32_t machine_c::run(int ticks)
 				end_pow:
 				break;
 			}
+
+			case FACTL:
+			/*
+				(i24) -> (i24)
+				pop number, push its i24 factorial up to 10!
+			*/
+			{ // TODO : i48 support
+				if(__DEBUG) { std::printf("debug: 階 FACTL     @ %d\n", int(command_ptr));}
+				temp_vmt = pop_main();
+				switch(temp_vmt.type)
+				{
+					case INT24_T:
+					case UINT24_T:
+						temp_i32 = temp_vmt.value;
+						switch(temp_i32)
+						{
+							case 0:
+							case 1:
+								temp_vmt = {INT24_T, 0x1};
+								break;
+							case 2:
+								temp_vmt = {INT24_T, 0x2};
+								break;
+							case 3:
+								temp_vmt = {INT24_T, 0x6};
+								break;
+							case 4:
+								temp_vmt = {INT24_T, 0x18};
+								break;
+							case 5:
+								temp_vmt = {INT24_T, 0x78};
+								break;
+							case 6:
+								temp_vmt = {INT24_T, 0x2d0};
+								break;
+							case 7:
+								temp_vmt = {INT24_T, 0x13b0};
+								break;
+							case 8:
+								temp_vmt = {INT24_T, 0x9d80};
+								break;
+							case 9:
+								temp_vmt = {INT24_T, 0x58980};
+								break;
+							case 10:
+								temp_vmt = {INT24_T, 0x375f00};
+								break;
+							default:
+								temp_vmt = {ERROR_T, 0xffffff};
+								break;
+						}
+						break;
+					/*
+						0x2611500
+						0x1c8cfc00
+						0x17328cc00
+						0x144c3b2800
+						0x13077775800
+						0x130777758000
+						0x1437eeecd8000
+						0x16beecca730000
+						0x1b02b9306890000
+					*/
+
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(temp_vmt.value << 8);
+						switch(int(temp_f32))
+						{
+							case 0:
+							case 1:
+								temp_vmt = {INT24_T, 0x1};
+								break;
+							case 2:
+								temp_vmt = {INT24_T, 0x2};
+								break;
+							case 3:
+								temp_vmt = {INT24_T, 0x6};
+								break;
+							case 4:
+								temp_vmt = {INT24_T, 0x18};
+								break;
+							case 5:
+								temp_vmt = {INT24_T, 0x78};
+								break;
+							case 6:
+								temp_vmt = {INT24_T, 0x2d0};
+								break;
+							case 7:
+								temp_vmt = {INT24_T, 0x13b0};
+								break;
+							case 8:
+								temp_vmt = {INT24_T, 0x9d80};
+								break;
+							case 9:
+								temp_vmt = {INT24_T, 0x58980};
+								break;
+							case 10:
+								temp_vmt = {INT24_T, 0x375f00};
+								break;
+							default:
+								temp_vmt = {ERROR_T, 0xffff};
+								break;
+						}
+						break;
+
+					default:
+						temp_vmt = {ERROR_T, 0xffff};
+				}
+				push_main(temp_vmt);
+				break;
+			}
+
 			/*
 				conditionals
 			*/

@@ -55,6 +55,7 @@ enum insn_t: uint16_t
     DIV      = 0x9664, // 除
     MUL      = 0x4e58, // 乘
     MOD      = 0x9918, // 餘
+    FACTL    = 0x968E, // 階
 
     LOG_E    = 0x57fa, // 基
     ROOT     = 0x6839, // 根
