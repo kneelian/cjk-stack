@@ -14,6 +14,8 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
     results are of the type command_t := struct { instruction, value }
 */
 {
+	destination.clear();
+
     uint32_t amount_written = 0;
 
     std::string_view::iterator beg_itr = cjk.begin();
@@ -171,6 +173,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x54e5: // 哥 - cousin/older bro = go1
 				destination.push_back({COUSIN, {0,0}});
 				break;
+			case 0x7b54: // 答 - respond/reply = daap3
+				destination.push_back({RESPOND, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -202,6 +207,8 @@ uint32_t machine_c::run(int ticks)
 */
 {
 	if(commands.empty()) { return -1; } // naughty naughty!
+
+	response.clear();
 
 	int32_t elapsed = 0;
 	size_t  command_ptr = 0;
@@ -1519,6 +1526,31 @@ uint32_t machine_c::run(int ticks)
 					(negative?"負":""), 
 					temp_string.data()
 				);
+
+				break;
+			}
+
+			case RESPOND: // 答 peek top of stack and print to response string
+			{
+				if(__DEBUG) { std::printf("debug: 答 RESPOND   @ %d\n", int(command_ptr)); }
+				temp_i32 = peek_main().value;
+
+				bool negative = false; 
+
+				if(temp_i32 & 0x00'80'00'00) 
+				{ 
+					negative = true;
+					temp_i32 |= 0xff'00'00'00;
+					temp_i32 = -temp_i32;
+				}
+
+				std::string temp_string;
+				to_hanzi(temp_string, temp_i32);
+
+				response.append("[");
+				response.append(negative?"負":"");
+				response.append(temp_string);
+				response.append("]\n");
 
 				break;
 			}

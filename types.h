@@ -61,7 +61,8 @@ enum insn_t: uint16_t
     ROOT     = 0x6839, // 根
     POW      = 0x51aa, // 冪
 
-    REPORT   = 0x5831, // 报 
+    REPORT   = 0x5831, // 报
+    RESPOND  = 0x7B54, // 答 
 
     TRANSPL  = 0x79fb, // 移
     TWIN     = 0x5b56, // 孖

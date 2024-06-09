@@ -30,7 +30,6 @@ int main(int argc, char** argv)
 
 	if(argc > 1)
 	{
-
 		std::FILE* input = std::fopen(argv[1], "r");
 
 		int tmp = 0;

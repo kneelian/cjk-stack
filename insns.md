@@ -72,3 +72,4 @@ for numbers 0x0 .. 0xa:
 # printing
 
 - 報 - peek and print to terminal
+- 答 - peek and write to response string
