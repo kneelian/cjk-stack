@@ -1,0 +1,1 @@
+g++ ./bot.cpp ../machine.cpp -std=gnu++20 -ldpp -o bot.a -Wno-narrowing
