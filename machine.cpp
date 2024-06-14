@@ -176,6 +176,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x7b54: // 答 - respond/reply = daap3
 				destination.push_back({RESPOND, {0,0}});
 				break;
+			case 0x8b6f: // 譯 - interpret = jit6
+				destination.push_back({INTERPRET, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;
@@ -1552,6 +1555,36 @@ uint32_t machine_c::run(int ticks)
 				response.append(temp_string);
 				response.append("]\n");
 
+				break;
+			}
+
+			case INTERPRET: // 譯 peek top of stack and print as UCS2 to response string
+			// TODO : i48
+			{
+				if(__DEBUG) { std::printf("debug: 譯 INTERPRET @ %d\n", int(command_ptr)); }
+				temp_vmt = pop_main();
+
+				switch(temp_vmt.type)
+				{
+					case  INT24_T:
+					case UINT24_T:
+					case   ADDR_T:
+						temp_i32 = temp_vmt.value;
+						break;
+					case F24_T:
+						temp_i32 = int(std::bit_cast<float>(temp_vmt.value << 8));
+						break;
+
+					default:
+						temp_i32 = 0x3f; // questionmark
+						std::printf("CANNOT INTERPRET NON-NUMERIC!\n");
+						break;
+				}
+
+				if(temp_i32 < 0x20) temp_i32 = 0x20;
+
+				utf8::append(temp_i32 & 0xffff, response);
+				
 				break;
 			}
 

@@ -73,3 +73,4 @@ for numbers 0x0 .. 0xa:
 
 - 報 - peek and print to terminal
 - 答 - peek and write to response string
+- 譯 - peek and write codepoint as UCS2 to response string

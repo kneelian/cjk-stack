@@ -1,0 +1,33 @@
+伍 push 5
+玖 push 9
+加 add ( = 14 )
+擰 swap main/side 
+/* here we set up condition on side-stack; how many fib numbers to calculate? */
+/* you can put any arbitrary number here up to ~36 because of integer width   */
+
+零 push 0
+壹 push 1 (first two terms)
+
+安 where? location    /*  do {
+  換 rotate ab > ba
+  孖 double a > aa
+  紡 rotate abc > cab
+  換 rotate ab > ba
+  孖 double a > aa
+  紡 rotate abc > cab
+  加 add
+/* this duplicates the top two stack members, and adds together the third to form the next term */
+/* the internal stack thus has all the fibonacci numbers on it, instead of popping off old ones */
+
+  答 write to response
+
+  擰 swap main/side
+  換 rotate ab > ba
+  低 decrement
+  換 rotate ab > ba 
+  擰 swap main/side
+/* here we decrement the counter that represents how many fib terms we have left */
+
+落 check side top, goto address on side if nonzero /*  while(side != 0);
+
+死 end program
