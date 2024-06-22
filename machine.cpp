@@ -179,6 +179,9 @@ uint32_t machine_c::lex(std::string_view cjk, std::vector<command_t>& destinatio
 			case 0x8b6f: // 譯 - interpret = jit6
 				destination.push_back({INTERPRET, {0,0}});
 				break;
+			case 0x8ade: // 諞 - swindle = pin5
+				destination.push_back({SWINDLE, {0,0}});
+				break;
             default:
             	destination.push_back({LABEL, {LABL_T, codepoint}});
                 break;

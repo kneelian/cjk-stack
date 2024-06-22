@@ -64,6 +64,7 @@ enum insn_t: uint16_t
     REPORT   = 0x5831, // 报
     RESPOND  = 0x7B54, // 答
     INTERPRET= 0x8b6f, // 譯
+    SWINDLE  = 0x8ade, // 諞
 
     TRANSPL  = 0x79fb, // 移
     TWIN     = 0x5b56, // 孖
