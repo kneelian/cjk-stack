@@ -1536,25 +1536,76 @@ uint32_t machine_c::run(int ticks)
 			case RESPOND: // 答 peek top of stack and print to response string
 			{
 				if(__DEBUG) { std::printf("debug: 答 RESPOND   @ %d\n", int(command_ptr)); }
-				temp_i32 = peek_main().value;
 
-				bool negative = false; 
-
-				if(temp_i32 & 0x00'80'00'00) 
-				{ 
-					negative = true;
-					temp_i32 |= 0xff'00'00'00;
-					temp_i32 = -temp_i32;
-				}
-
+				bool negative = false;
 				std::string temp_string;
-				to_hanzi(temp_string, temp_i32);
+
+				switch(peek_main().type)
+				{
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(peek_main().value << 8);
+						to_hanzi_f24(temp_string, temp_f32);
+						break;
+					case INT24_T:
+						temp_i32 = peek_main().value;
+						if(temp_i32 & 0x00'80'00'00) 
+						{ 
+							negative = true;
+							temp_i32 |= 0xff'00'00'00;
+							temp_i32 = -temp_i32;
+						}
+						to_hanzi(temp_string, temp_i32);
+						break;
+					case UINT24_T:
+						temp_i32 = peek_main().value;
+						to_hanzi(temp_string, temp_i32);
+						break;
+					default:
+						temp_string = " ??? ";
+						break;
+				}
 
 				response.append("[");
 				response.append(negative?"負":"");
 				response.append(temp_string);
 				response.append("]\n");
 
+				break;
+			}
+
+			case SWINDLE: // 諞 peek top of stack and print as arabic numeral
+			{
+				if(__DEBUG) { std::printf("debug: 諞 SWINDLE   @ %d\n", int(command_ptr)); }
+
+				std::string temp_string;
+
+				switch(peek_main().type)
+				{
+					case F24_T:
+						temp_f32 = std::bit_cast<float>(peek_main().value << 8);
+						temp_string = std::to_string(temp_f32);
+						break;
+					case UINT24_T:
+						temp_i32 = peek_main().value;
+						temp_string = std::to_string(temp_i32);
+						break;
+					case INT24_T:
+						temp_i32 = peek_main().value;
+						if(temp_i32 & 0x00'80'00'00)
+						{
+							temp_i32 &= 0x00'7f'ff'ff;
+							temp_i32 = -temp_i32;
+						}
+						temp_string = std::to_string(temp_i32);
+						break;
+					default:
+						temp_string = " ??? ";
+				}
+
+				response.append("[");
+				response.append(temp_string);
+				response.append("]\n");
+				
 				break;
 			}
 

@@ -6,6 +6,59 @@
 std::string hanzi_to_9999(int32_t num);
 uint32_t hanzi_digit(int32_t num);
 
+void to_hanzi_f24(std::string& tgt, float num)
+{
+	tgt.clear();
+	if(num == 0) { utf8::append(0x3007, tgt); return; }
+
+	if(num < 0)
+	{
+		utf8::append(0x8CA0, tgt);
+		num = 0 - num;
+	}
+
+	int32_t whole  = int32_t(num);
+	float   remain = num - whole;
+	int32_t top = whole / 10000;
+	int32_t bot = whole % 10000;
+	if(top)
+	{
+		tgt.append( hanzi_to_9999(top) );
+		utf8::append(0x842C, tgt);
+	}
+
+	tgt.append( hanzi_to_9999(bot) );
+	if(remain)
+	{
+		utf8::append(0xff1a, tgt);
+		int32_t rem_whole = int32_t(remain * 10000);
+
+		utf8::append(hanzi_digit(rem_whole/1000), tgt);
+		if(rem_whole % 1000 == 0) { goto break_if; }
+
+		rem_whole %= 1000;
+		utf8::append(hanzi_digit(rem_whole/100), tgt);
+		if(rem_whole % 100 == 0) { goto break_if; }
+
+		rem_whole %= 100;
+		utf8::append(hanzi_digit(rem_whole/10), tgt);
+		if(rem_whole % 10 == 0) { goto break_if; }
+
+		rem_whole %= 10;
+		utf8::append(hanzi_digit(rem_whole), tgt);
+		if(rem_whole == 0) { goto break_if; }
+
+		break_if:;
+	}
+	else
+	{
+		utf8::append(0xff1a, tgt);
+		utf8::append(0x3007, tgt);
+	}
+
+	return;
+}
+
 void to_hanzi(std::string& tgt, int32_t num)
 {
 	tgt.clear();
@@ -56,6 +109,8 @@ uint32_t hanzi_digit(int32_t num)
 {
 	switch(num)
 	{
+		case 0:
+			return 0x3007;
 		case 1:
 			return 0x4E00;
 		case 2:
