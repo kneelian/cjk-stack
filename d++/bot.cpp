@@ -7,6 +7,8 @@
 #include "../types.h"
 #include "../machine.h"
 
+#include "../cheatmode.h"
+
 	using namespace std::literals;
 
 	const std::string BOT_TOKEN = "xyz";
@@ -21,10 +23,44 @@
 	    bot.on_log(dpp::utility::cout_logger());
 
 		bot.on_message_create([&](const dpp::message_create_t& event) mutable {
-			
-	        /* See if the message contains the phrase we want to check for.
-	         * If there's at least a single match, we reply and say it's not allowed.
-	         */
+
+			if (event.msg.content.starts_with("sein-->"sv)) {
+
+	        	std::string example_string;
+				seinmode(event.msg.content.substr(7), example_string);
+
+	        	machine.load(example_string); 
+	        	machine.lex();
+
+	        	int runtime = machine.run(1<<16);
+
+	        	if(machine.response.empty())
+	        	{
+	        		event.reply("Execution finished after "s
+	        			.append(std::to_string(runtime)
+	        			.append(" steps, with no response."))
+	        		);
+	        	} else
+	            {
+	            	if(machine.response.size() > 1800)
+		            {
+		            	machine.response = machine.response.substr(0,1800);
+		            	machine.response.append("... etc; \nresponse too long for discord bot");
+		            }
+	            	event.reply(
+	            				"`"s
+	            				.append(example_string)
+	            				.append("`\n")
+	            				.append("```\n")
+	            				.append(machine.response)
+	            			    .append("```\nExecution finished after ")
+	            			    .append(std::to_string(runtime))
+	            			    .append(" steps"), 
+	            		true
+	            	);
+	        	}
+	        } else
+
 	        if (event.msg.content.starts_with("cjk-->"sv)) {
 
 	        	std::string example_string = event.msg.content.substr(5);
