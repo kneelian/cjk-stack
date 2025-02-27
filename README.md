@@ -19,3 +19,7 @@ It currently doesn't support any option flags.
 The shellcode sets up the program source and handles invocation of the interpreter machine object.
 
 The interpreter takes a string (`cstr` or `std::string`, or `std::string_view`) containing instructions, then lexes it into a vector of commands, and then executes commands from that array. The command tape wraps around: executing past the final instruction returns the pointer to the start of the vector, providing mechanics for an infinite loop.  
+
+# further plans
+
+Plans to rewrite the interpreter and port it to embedded systems 
